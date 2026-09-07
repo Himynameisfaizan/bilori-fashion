@@ -445,96 +445,111 @@ class ProductController extends Controller
 
         $product->update($data);
 
-        // ==================== UPDATE VARIATIONS ====================
-        if ($request->has('variations')) {
-            $existingColorIds = $product->colors()->pluck('id')->toArray();
-            $updatedColorIds = [];
+// ==================== UPDATE VARIATIONS ====================
+if ($request->has('variations')) {
+    $existingColorIds = $product->colors()->pluck('id')->toArray();
+    $updatedColorIds = [];
 
-            foreach ($request->variations as $colorIndex => $variation) {
-                if (empty($variation['color_name'])) { continue; }
+    foreach ($request->variations as $colorIndex => $variation) {
+        if (empty($variation['color_name'])) { continue; }
 
-                $colorId = $variation['id'] ?? null;
-                $colorData = [
-                    'product_id' => $product->id,
-                    'name' => $variation['color_name'],
-                    'code' => $variation['color_code'] ?? '#000000',
-                    'extra_price' => 0,
-                    'sku' => $variation['color_sku'] ?? null,
-                    'is_active' => true,
-                ];
+        $colorId = $variation['id'] ?? null;
+        $colorData = [
+            'product_id' => $product->id,
+            'name' => $variation['color_name'],
+            'code' => $variation['color_code'] ?? '#000000',
+            'extra_price' => 0,
+            'sku' => $variation['color_sku'] ?? null,
+            'is_active' => true,
+        ];
 
-                $colorImages = [];
-                if (isset($variation['existing_images']) && is_array($variation['existing_images'])) {
-                    foreach ($variation['existing_images'] as $existingImage) {
-                        if (isset($existingImage['keep']) && $existingImage['keep'] == '1' && isset($existingImage['path'])) {
-                            $colorImages[] = $existingImage['path'];
-                        } elseif (isset($existingImage['path'])) {
-                            $filePath = public_path($existingImage['path']);
-                            if (file_exists($filePath)) { unlink($filePath); }
-                        }
-                    }
-                }
+        $hasImageUpdate = false;
+        $colorImages = [];
 
-                if (isset($variation['images']) && is_array($variation['images'])) {
-                    $colorImagesPath = public_path('uploads/products/colors');
-                    foreach ($variation['images'] as $newImage) {
-                        if ($newImage instanceof \Illuminate\Http\UploadedFile && $newImage->isValid()) {
-                            $colorImgName = time() . '_' . uniqid() . '.' . $newImage->getClientOriginalExtension();
-                            $newImage->move($colorImagesPath, $colorImgName);
-                            $colorImages[] = 'uploads/products/colors/' . $colorImgName;
-                        }
-                    }
-                }
-
-                $colorData['images'] = !empty($colorImages) ? json_encode(array_values($colorImages)) : null;
-                $colorData['image'] = !empty($colorImages) ? $colorImages[0] : null;
-
-                if ($colorId && in_array($colorId, $existingColorIds)) {
-                    $color = ProductColor::find($colorId);
-                    if ($color) {
-                        $color->update($colorData);
-                        $updatedColorIds[] = $colorId;
-                        $color->sizes()->delete();
-                    }
-                } else {
-                    $color = ProductColor::create($colorData);
-                    $updatedColorIds[] = $color->id;
-                }
-
-                if (isset($variation['sizes']) && is_array($variation['sizes']) && isset($color)) {
-                    foreach ($variation['sizes'] as $size) {
-                        if (empty($size['size'])) { continue; }
-                        ProductSize::create([
-                            'product_id' => $product->id,
-                            'product_color_id' => $color->id,
-                            'size' => $size['size'],
-                            'extra_price' => $size['price'] ?? 0,
-                            'stock' => $size['stock'] ?? 0,
-                            'sku' => $size['sku'] ?? null,
-                            'is_active' => isset($size['is_active']) ? true : false,
-                        ]);
-                    }
+        // Safely handle existing images
+        if (isset($variation['existing_images']) && is_array($variation['existing_images'])) {
+            $hasImageUpdate = true;
+            foreach ($variation['existing_images'] as $existingImage) {
+                if (isset($existingImage['keep']) && $existingImage['keep'] == '1' && isset($existingImage['path'])) {
+                    $colorImages[] = $existingImage['path'];
+                } elseif (isset($existingImage['path'])) {
+                    $filePath = public_path($existingImage['path']);
+                    if (file_exists($filePath)) { @unlink($filePath); }
                 }
             }
+        } elseif (isset($variation['existing_images'])) {
+            $hasImageUpdate = true; // Sent but empty
+        }
 
-            $colorsToDelete = array_diff($existingColorIds, $updatedColorIds);
-            foreach ($colorsToDelete as $colorId) {
-                $color = ProductColor::find($colorId);
-                if ($color) {
-                    if ($color->images) {
-                        $images = json_decode($color->images, true);
-                        if (is_array($images)) {
-                            foreach ($images as $img) {
-                                if (file_exists(public_path($img))) { unlink(public_path($img)); }
-                            }
-                        }
-                    }
-                    if ($color->image && file_exists(public_path($color->image))) { unlink(public_path($color->image)); }
-                    $color->sizes()->delete();
-                    $color->delete();
+        // Handle new images
+        if (isset($variation['images']) && is_array($variation['images'])) {
+            $hasImageUpdate = true;
+            $colorImagesPath = public_path('uploads/products/colors');
+            foreach ($variation['images'] as $newImage) {
+                if ($newImage instanceof \Illuminate\Http\UploadedFile && $newImage->isValid()) {
+                    $colorImgName = time() . '_' . uniqid() . '.' . $newImage->getClientOriginalExtension();
+                    $newImage->move($colorImagesPath, $colorImgName);
+                    $colorImages[] = 'uploads/products/colors/' . $colorImgName;
                 }
             }
         }
+
+        // Apply image updates ONLY if image fields were included in request
+        if ($hasImageUpdate) {
+            $colorData['images'] = !empty($colorImages) ? json_encode(array_values($colorImages)) : null;
+            $colorData['image'] = !empty($colorImages) ? $colorImages[0] : null;
+        }
+
+        // Update existing or create new color
+        if (!empty($colorId) && in_array($colorId, $existingColorIds)) {
+            $color = ProductColor::find($colorId);
+            if ($color) {
+                $color->update($colorData);
+                $updatedColorIds[] = $colorId;
+            }
+        } else {
+            $color = ProductColor::create($colorData);
+            $updatedColorIds[] = $color->id;
+        }
+
+        // Handle Sizes - ONLY delete and recreate if sizes array is explicitly provided
+        if (isset($variation['sizes']) && is_array($variation['sizes']) && isset($color)) {
+            $color->sizes()->delete(); // Pehle purane size delete karein
+            
+            foreach ($variation['sizes'] as $size) {
+                if (empty($size['size'])) { continue; }
+                ProductSize::create([
+                    'product_id' => $product->id,
+                    'product_color_id' => $color->id,
+                    'size' => $size['size'],
+                    'extra_price' => $size['price'] ?? 0,
+                    'stock' => $size['stock'] ?? 0,
+                    'sku' => $size['sku'] ?? null,
+                    'is_active' => isset($size['is_active']) ? true : false,
+                ]);
+            }
+        }
+    }
+
+    // Delete colors that are no longer in the request
+    $colorsToDelete = array_diff($existingColorIds, $updatedColorIds);
+    foreach ($colorsToDelete as $colorId) {
+        $color = ProductColor::find($colorId);
+        if ($color) {
+            if ($color->images) {
+                $images = json_decode($color->images, true);
+                if (is_array($images)) {
+                    foreach ($images as $img) {
+                        if (file_exists(public_path($img))) { @unlink(public_path($img)); }
+                    }
+                }
+            }
+            if ($color->image && file_exists(public_path($color->image))) { @unlink(public_path($color->image)); }
+            $color->sizes()->delete();
+            $color->delete();
+        }
+    }
+}
 
         return redirect()->route('admin.products.index')->with('success', 'Product updated successfully!');
     }

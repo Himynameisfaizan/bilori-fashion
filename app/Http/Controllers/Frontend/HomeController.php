@@ -15,7 +15,7 @@ use App\Models\NewArrival;
 use App\Models\Policy;
 use App\Models\About;
 
-class HomeController extends Controller
+class   HomeController extends Controller
 {
     /**
      * Display premium storefront homepage
