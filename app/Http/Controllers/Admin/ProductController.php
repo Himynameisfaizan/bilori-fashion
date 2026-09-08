@@ -549,7 +549,7 @@ if ($request->has('variations')) {
             $color->delete();
         }
     }
-}
+
 
         return redirect()->route('admin.products.index')->with('success', 'Product updated successfully!');
     }
