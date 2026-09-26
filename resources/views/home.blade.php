@@ -38,12 +38,13 @@ s.parentNode.insertBefore(t,s)}(window, document,'script',
 fbq('init', '840233335473914');
 fbq('track', 'PageView');
 </script>
+
 </head>
 
 <body>
     @include('partials.header')
-
-    <main class="main__content_wrapper">
+ 
+<main class="main__content_wrapper">
         <!-- Start slider section -->
         <!--<section class="hero__slider--section">-->
         <!--    <div class="hero__slider--inner hero__slider--activation swiper dot-Swiper">-->

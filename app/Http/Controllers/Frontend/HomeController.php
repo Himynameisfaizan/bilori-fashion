@@ -22,11 +22,9 @@ class   HomeController extends Controller
      */
     public function index()
     {
-        // Detect device safely
         $userAgent = request()->header('User-Agent');
         $device = str_contains($userAgent, 'Mobile') ? 'mobile' : 'desktop';
 
-        // Banners (mobile / laptop filter)
         $mobileBanners = Banner::where('status', 1)
             ->where(function ($q) {
                 $q->where('device_type', 'mobile')
