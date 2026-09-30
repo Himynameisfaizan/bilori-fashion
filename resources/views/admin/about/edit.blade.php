@@ -7,7 +7,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h3 class="fw-bold mb-1">Edit About Details</h3>
-                <p class="text-muted mb-0">Update your website's about information, images, and SEO configurations.</p>
+                <p class="text-muted mb-0">Update your website's about information, masonry images, artisan vision, and SEO configurations.</p>
             </div>
         </div>
 
@@ -20,14 +20,12 @@
         @endif
 
         <div class="row justify-content-center">
-            <div class="col-lg-8">
+            <div class="col-lg-9">
 
                 <div class="card shadow-sm border-0 rounded-4">
                     <div class="card-body p-4">
 
-                        <!-- Action routes changed to match admin.about.update -->
                        <form method="POST" action="{{ route('admin.about.update') }}" enctype="multipart/form-data">
-
                             @csrf
                             @method('PUT')
 
@@ -37,6 +35,16 @@
                                 <input type="text" name="title" class="form-control custom-input @error('title') is-invalid @enderror" 
                                     value="{{ old('title', $about->title ?? '') }}" placeholder="Enter about section title">
                                 @error('title')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- SUBTITLE -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Subtitle / Brand Tagline</label>
+                                <input type="text" name="subtitle" class="form-control custom-input @error('subtitle') is-invalid @enderror" 
+                                    value="{{ old('subtitle', $about->subtitle ?? '') }}" placeholder="e.g. AT HOUSE OF KARI...">
+                                @error('subtitle')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -61,16 +69,15 @@
                                 @enderror
                             </div>
 
-                            <!-- CURRENT IMAGE -->
-                           @if(!empty($about->image))
-    <div class="mb-3">
-        <label class="form-label d-block">Current Image:</label>
-        <!-- Bina storage/ ke direct asset call karein -->
-        <img src="{{ asset($about->image) }}" class="img-thumbnail" width="150" alt="About Image">
-    </div>
-@endif
+                            <!-- CURRENT MAIN IMAGE -->
+                            @if(!empty($about->image))
+                                <div class="mb-3">
+                                    <label class="form-label d-block">Current Featured Image:</label>
+                                    <img src="{{ asset($about->image) }}" class="img-thumbnail" width="150" alt="About Image">
+                                </div>
+                            @endif
 
-                            <!-- NEW IMAGE -->
+                            <!-- NEW MAIN IMAGE -->
                             <div class="mb-4">
                                 <label class="form-label fw-semibold">Update Featured Image</label>
                                 <input type="file" name="image" class="form-control custom-input @error('image') is-invalid @enderror">
@@ -78,6 +85,76 @@
                                 @error('image')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                            </div>
+
+                            <hr class="text-muted my-4 opacity-25">
+                            <h5 class="fw-bold mb-3 text-secondary">Masonry Image Grid (Gallery)</h5>
+
+                            <!-- CURRENT GALLERY IMAGES -->
+                            @if(!empty($about->gallery_images) && is_array($about->gallery_images))
+                                <div class="mb-3">
+                                    <label class="form-label d-block">Current Grid Images:</label>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @foreach($about->gallery_images as $gImg)
+                                            <div class="position-relative">
+                                                <img src="{{ asset($gImg) }}" class="img-thumbnail" width="90" height="90" style="object-fit: cover;" alt="Grid Image">
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- UPLOAD GALLERY IMAGES -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Upload Masonry Gallery Images (Multiple)</label>
+                                <input type="file" name="gallery_images[]" class="form-control custom-input" multiple>
+                                <small class="text-muted">Select multiple images to display in the asymmetric photo grid.</small>
+                            </div>
+
+                            <hr class="text-muted my-4 opacity-25">
+                            <h5 class="fw-bold mb-3 text-secondary">Vision & Artisan Section</h5>
+
+                            <!-- VISION TITLE -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Vision Section Heading</label>
+                                <input type="text" name="vision_title" class="form-control custom-input" 
+                                    value="{{ old('vision_title', $about->vision_title ?? '') }}" placeholder="Enter vision block title">
+                            </div>
+
+                            <!-- VISION DESCRIPTION -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Vision Section Content</label>
+                                <textarea name="vision_description" class="form-control custom-input" rows="4"
+                                    placeholder="Write details about artisans and commitments...">{{ old('vision_description', $about->vision_description ?? '') }}</textarea>
+                            </div>
+
+                            <!-- CURRENT VISION IMAGES -->
+                            @if(!empty($about->vision_images) && is_array($about->vision_images))
+                                <div class="mb-3">
+                                    <label class="form-label d-block">Current Vision Split Images:</label>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @foreach($about->vision_images as $vImg)
+                                            <img src="{{ asset($vImg) }}" class="img-thumbnail" width="90" height="90" style="object-fit: cover;" alt="Vision Image">
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- UPLOAD VISION IMAGES -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Upload Vision Split Images (Multiple)</label>
+                                <input type="file" name="vision_images[]" class="form-control custom-input" multiple>
+                                <small class="text-muted">Upload side-by-side artisan photos for the rustic block.</small>
+                            </div>
+
+                            <hr class="text-muted my-4 opacity-25">
+                            <h5 class="fw-bold mb-3 text-secondary">Feature / Promise Section</h5>
+
+                            <!-- FEATURE TITLE -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Feature Heading Banner Text</label>
+                                <input type="text" name="feature_title" class="form-control custom-input" 
+                                    value="{{ old('feature_title', $about->feature_title ?? '') }}" placeholder="BECAUSE AT BILORI, YOU’RE NOT JUST WEARING FASHION —">
                             </div>
 
                             <hr class="text-muted my-4 opacity-25">
