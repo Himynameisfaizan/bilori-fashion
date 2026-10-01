@@ -91,13 +91,16 @@
                             <h5 class="fw-bold mb-3 text-secondary">Masonry Image Grid (Gallery)</h5>
 
                             <!-- CURRENT GALLERY IMAGES -->
-                            @if(!empty($about->gallery_images) && is_array($about->gallery_images))
+                       @if(!empty($about->gallery_images) && is_array($about->gallery_images))
                                 <div class="mb-3">
-                                    <label class="form-label d-block">Current Grid Images:</label>
-                                    <div class="d-flex flex-wrap gap-2">
-                                        @foreach($about->gallery_images as $gImg)
-                                            <div class="position-relative">
-                                                <img src="{{ asset($gImg) }}" class="img-thumbnail" width="90" height="90" style="object-fit: cover;" alt="Grid Image">
+                                    <label class="form-label d-block">Current Grid Images (Check to Delete):</label>
+                                    <div class="d-flex flex-wrap gap-3">
+                                        @foreach($about->gallery_images as $index => $gImg)
+                                            <div class="position-relative text-center border p-2 rounded">
+                                                <img src="{{ asset($gImg) }}" class="img-thumbnail d-block mb-2" width="100" height="100" style="object-fit: cover;" alt="Grid Image">
+                                                <input type="checkbox" name="remove_gallery[]" value="{{ $index }}" id="rg_{{ $index }}" class="form-check-input border-danger">
+                                                <label for="rg_{{ $index }}" class="text-danger small fw-bold">Remove</label>
+                                                <input type="hidden" name="existing_gallery[{{ $index }}]" value="{{ $gImg }}">
                                             </div>
                                         @endforeach
                                     </div>
@@ -129,12 +132,17 @@
                             </div>
 
                             <!-- CURRENT VISION IMAGES -->
-                            @if(!empty($about->vision_images) && is_array($about->vision_images))
+                       @if(!empty($about->vision_images) && is_array($about->vision_images))
                                 <div class="mb-3">
-                                    <label class="form-label d-block">Current Vision Split Images:</label>
-                                    <div class="d-flex flex-wrap gap-2">
-                                        @foreach($about->vision_images as $vImg)
-                                            <img src="{{ asset($vImg) }}" class="img-thumbnail" width="90" height="90" style="object-fit: cover;" alt="Vision Image">
+                                    <label class="form-label d-block">Current Vision Split Images (Check to Delete):</label>
+                                    <div class="d-flex flex-wrap gap-3">
+                                        @foreach($about->vision_images as $index => $vImg)
+                                            <div class="position-relative text-center border p-2 rounded">
+                                                <img src="{{ asset($vImg) }}" class="img-thumbnail d-block mb-2" width="100" height="100" style="object-fit: cover;" alt="Vision Image">
+                                                <input type="checkbox" name="remove_vision[]" value="{{ $index }}" id="rv_{{ $index }}" class="form-check-input border-danger">
+                                                <label for="rv_{{ $index }}" class="text-danger small fw-bold">Remove</label>
+                                                <input type="hidden" name="existing_vision[{{ $index }}]" value="{{ $vImg }}">
+                                            </div>
                                         @endforeach
                                     </div>
                                 </div>

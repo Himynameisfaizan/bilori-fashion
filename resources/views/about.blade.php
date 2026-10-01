@@ -3,228 +3,337 @@
 <head>
     <meta charset="utf-8" />
     <title>{{ $about->meta_title ?? 'About Us | Bilori Fashion' }}</title>
-    <meta name="description" content="{{ $about->meta_description ?? 'Learn more about Bilori Fashion.' }}" />
+    <meta name="description" content="{{ $about->meta_description ?? 'Learn the story behind Bilori Fashion.' }}" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('img/favicon.ico') }}" />
 
-    <!-- Google Fonts for Premium Look -->
+    <!-- Ultra Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <link rel="stylesheet" href="{{ asset('css/vendor/bootstrap.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
 
     <style>
         :root {
-            --primary-color: #222222;
-            --brand-color: #d88975; /* A subtle earthy tone like Kari */
-            --bg-light: #fdfdfc;
-            --bg-sand: #f8f5f0;
-            --text-dark: #333333;
-            --text-muted: #666666;
+            --bg-pure-white: #ffffff;
+            --bg-warm-white: #faf9f8;
+            --text-dark: #1a1a1a;
+            --text-gray: #555555;
+            --accent-gold: #c8815f;
             --font-heading: 'Playfair Display', serif;
             --font-body: 'Montserrat', sans-serif;
         }
 
         body {
-            background-color: var(--bg-light);
+            background-color: var(--bg-pure-white);
             font-family: var(--font-body);
             color: var(--text-dark);
+            overflow-x: hidden;
         }
 
-        /* --- Header Section --- */
+        /* --- 1. Premium Hero Section with Background Image --- */
         .about-hero {
-            padding: 160px 0 60px;
+            position: relative;
+            padding: 220px 5% 120px;
             text-align: center;
-            background-color: var(--bg-light);
+            background-image: url('{{ !empty($about->image) ? asset($about->image) : "https://images.unsplash.com/photo-1558769132-cb1fac084092?auto=format&fit=crop&w=1920&q=80" }}');
+            background-size: cover;
+            background-position: center 30%;
+            background-attachment: fixed; /* Parallax Effect */
+            color: #ffffff;
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 100%);
+            z-index: 1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            animation: fadeInUp 1.2s ease-out forwards;
+        }
+        
+        .about-subtitle-top {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+            display: block;
+            font-weight: 600;
         }
         .about-title {
             font-family: var(--font-heading);
-            font-size: 42px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 25px;
-            color: var(--primary-color);
+            font-size: 64px;
+            font-weight: 500;
+            line-height: 1.1;
+            color: #ffffff;
+            margin-bottom: 30px;
+            max-width: 900px;
+            margin-inline: auto;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
-        .about-subtitle {
-            max-width: 800px;
+        .about-desc {
+            max-width: 700px;
             margin: 0 auto;
-            font-size: 16px;
-            line-height: 1.8;
-            color: var(--text-dark);
-            font-weight: 400;
+            font-size: 18px;
+            line-height: 1.9;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
         }
 
-        /* --- Masonry Grid Section --- */
-        .masonry-grid-section {
-            padding: 40px 0;
-            background-color: var(--bg-light);
+        /* --- Elegant Breadcrumb (Moved below description) --- */
+        .modern-breadcrumb {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 40px;
+            font-weight: 500;
         }
-        .masonry-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-auto-rows: 250px;
-            gap: 15px;
+        .modern-breadcrumb a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .modern-breadcrumb a:hover {
+            color: var(--accent-gold);
+        }
+        .modern-breadcrumb span.separator {
+            margin: 0 12px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* --- 2. Editorial Masonry Grid (4 Columns) --- */
+        .editorial-gallery {
+            padding: 80px 5%;
+            background-color: var(--bg-pure-white);
+        }
+        .masonry-columns {
+            column-count: 4; /* Changed from 3 to 4 */
+            column-gap: 25px;
         }
         .masonry-item {
-            position: relative;
+            break-inside: avoid;
+            margin-bottom: 25px;
+            border-radius: 8px;
             overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            position: relative;
         }
         .masonry-item img {
             width: 100%;
-            height: 100%;
+            display: block;
             object-fit: cover;
-            transition: transform 0.7s ease;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         .masonry-item:hover img {
-            transform: scale(1.05);
+            transform: scale(1.06);
         }
-        /* Specific Grid Placements to mimic the asymmetric look */
-        .item-1 { grid-column: 1 / 2; grid-row: 1 / 3; }
-        .item-2 { grid-column: 2 / 3; grid-row: 1 / 4; } /* Tall image */
-        .item-3 { grid-column: 3 / 4; grid-row: 1 / 2; }
-        .item-4 { grid-column: 4 / 5; grid-row: 1 / 3; }
-        .item-5 { grid-column: 1 / 2; grid-row: 3 / 4; }
-        .item-6 { grid-column: 3 / 4; grid-row: 2 / 4; }
-        .item-7 { grid-column: 4 / 5; grid-row: 3 / 5; }
-        
-        .story-text-center {
-            padding: 80px 20px;
+
+        /* --- 3. Minimal Quote --- */
+        .quote-section {
+            padding: 100px 20px;
             text-align: center;
-            background-color: var(--bg-light);
+            background-color: var(--bg-warm-white);
         }
-        .story-text-center p {
+        .quote-text {
             font-family: var(--font-heading);
-            font-size: 24px;
+            font-size: 36px;
             font-style: italic;
             color: var(--text-dark);
-            max-width: 700px;
+            max-width: 900px;
             margin: 0 auto;
-            line-height: 1.6;
+            line-height: 1.5;
+            position: relative;
+        }
+        .quote-text::before {
+            content: "“";
+            font-size: 80px;
+            color: rgba(200, 129, 95, 0.2);
+            position: absolute;
+            top: -40px;
+            left: -40px;
+            font-family: var(--font-heading);
         }
 
-        /* --- Split Content Section (Vision/Artisans) --- */
-        .vision-section {
+        /* --- 4. Vision Split Section --- */
+        .vision-split {
             display: flex;
             flex-wrap: wrap;
-            background-color: #d27653; /* Rustic Orange */
-            color: white;
+            align-items: center;
+            background-color: var(--bg-pure-white);
+            padding: 80px 5%;
         }
-        .vision-images {
-            flex: 1 1 50%;
-            display: flex;
+        .vision-img-col {
+            flex: 0 0 50%;
+            padding: 20px 5%;
+            position: relative;
         }
-        .vision-images img {
-            width: 50%;
+        .vision-img-col img {
+            width: 100%;
+            aspect-ratio: 4/5;
             object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 2;
         }
-        .vision-content {
-            flex: 1 1 50%;
-            padding: 80px 60px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+        .vision-img-col::after {
+            content: '';
+            position: absolute;
+            top: 60px;
+            right: 0;
+            width: 80%;
+            height: 90%;
+            background-color: var(--bg-warm-white);
+            border: 1px solid #eaeaea;
+            z-index: 1;
+            border-radius: 12px;
         }
-        .vision-content p {
-            font-size: 17px;
-            line-height: 2;
+        .vision-text-col {
+            flex: 0 0 50%;
+            padding: 40px 5%;
+        }
+        .vision-text-col h2 {
+            font-family: var(--font-heading);
+            font-size: 46px;
+            margin-bottom: 25px;
+            color: var(--text-dark);
+        }
+        .vision-text-col p {
+            font-size: 16px;
+            line-height: 2.2;
+            color: var(--text-gray);
             margin-bottom: 20px;
-            font-weight: 400;
+            font-weight: 300;
         }
 
-        /* --- Three Column Images --- */
-        .three-col-section {
-            padding: 100px 0;
-            background-color: var(--bg-sand);
+        /* --- 5. Craftsmanship Section --- */
+        .craftsmanship {
+            padding: 100px 5%;
+            background-color: var(--bg-warm-white);
+            text-align: center;
         }
-        .three-col-grid {
+        .craft-header {
+            margin-bottom: 70px;
+        }
+        .craft-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
+            gap: 40px;
         }
-        .three-col-item img {
+        .craft-item img {
             width: 100%;
-            height: auto;
-            border-radius: 4px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            aspect-ratio: 1/1; 
+            object-fit: cover;
+            object-position: top;
+            border-radius: 50%; 
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+            transition: transform 0.5s ease;
+            max-width: 280px;
+            background-color: #eaeaea; /* Fallback color before load */
         }
-        .three-col-text {
-            text-align: center;
-            max-width: 800px;
-            margin: 60px auto 0;
-            font-size: 16px;
-            line-height: 1.8;
+        .craft-item:hover img {
+            transform: translateY(-10px);
+        }
+        .craft-item h4 {
+            font-family: var(--font-heading);
+            font-size: 24px;
+            margin-bottom: 15px;
             color: var(--text-dark);
         }
-
-        /* --- Features Section --- */
-        .features-section {
-            padding: 80px 0;
-            background-color: var(--bg-light);
-            text-align: center;
-            border-top: 1px solid #eee;
+        .craft-item p {
+            color: var(--text-gray);
+            font-size: 15px;
+            line-height: 1.8;
+            padding: 0 20px;
         }
-        .feature-main-title {
-            font-size: 16px;
-            letter-spacing: 2px;
+
+        /* --- 6. Core Values --- */
+        .core-values {
+            padding: 100px 5%;
+            background-color: var(--bg-pure-white);
+            text-align: center;
+        }
+        .values-title {
+            font-size: 14px;
+            letter-spacing: 4px;
             text-transform: uppercase;
-            margin-bottom: 60px;
+            color: var(--accent-gold);
+            margin-bottom: 70px;
             font-weight: 600;
         }
-        .features-grid {
+        .values-grid {
             display: flex;
             justify-content: center;
-            gap: 80px;
             flex-wrap: wrap;
+            gap: 60px;
         }
-        .feature-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 200px;
+        .value-box {
+            max-width: 260px;
         }
-        .feature-icon-wrapper {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
+        .value-icon {
+            font-size: 38px;
+            color: var(--text-dark);
+            margin-bottom: 25px;
+            transition: transform 0.4s ease, color 0.4s ease;
         }
-        .feature-icon-wrapper img {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
+        .value-box:hover .value-icon {
+            transform: scale(1.1);
+            color: var(--accent-gold);
         }
-        .feature-title {
-            font-size: 14px;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-        .tagline {
+        .value-box h5 {
             font-family: var(--font-heading);
-            font-style: italic;
-            font-size: 24px;
-            margin-top: 60px;
-            color: var(--primary-color);
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+        .value-box p {
+            font-size: 15px;
+            color: var(--text-gray);
+            line-height: 1.7;
         }
 
-        /* Responsive Design */
+        /* --- Safe Animations --- */
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(40px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up-element {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-up-element.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 1199px) {
+            .masonry-columns { column-count: 3; }
+        }
         @media (max-width: 991px) {
-            .vision-images, .vision-content { flex: 1 1 100%; }
-            .vision-content { padding: 50px 30px; }
-            .masonry-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 200px; }
-            .item-1, .item-2, .item-3, .item-4, .item-5, .item-6, .item-7 { grid-column: span 1; grid-row: span 1; }
-            .three-col-grid { grid-template-columns: 1fr; }
+            .about-hero { padding: 180px 20px 80px; }
+            .about-title { font-size: 48px; }
+            .masonry-columns { column-count: 2; }
+            .vision-img-col, .vision-text-col { flex: 0 0 100%; padding: 20px; }
+            .vision-img-col::after { display: none; }
+            .vision-text-col h2 { font-size: 36px; text-align: center; }
+            .craft-grid { grid-template-columns: 1fr; gap: 50px; }
+            .craft-item img { max-width: 250px; }
+            .values-grid { flex-direction: column; align-items: center; }
         }
         @media (max-width: 767px) {
-            .about-hero { padding: 120px 20px 40px; }
-            .about-title { font-size: 32px; }
-            .features-grid { gap: 40px; }
+            .about-hero { padding: 150px 20px 60px; background-attachment: scroll; }
+            .about-title { font-size: 38px; }
+            .quote-text { font-size: 26px; }
+            .masonry-columns { column-count: 2; } /* Keeps it 2 columns on mobile for better look */
         }
     </style>
 </head>
@@ -233,109 +342,155 @@
     @include('partials.header')
 
     <main>
-        <!-- 1. Hero Title & Intro -->
+        <!-- 1. Hero Section -->
         <section class="about-hero">
-            <div class="container">
-                <h1 class="about-title">{{ $about->title }}</h1>
-                <p class="about-subtitle">
+            <div class="hero-overlay"></div>
+            <div class="container hero-content">
+                <span class="about-subtitle-top">{{ $about->subtitle ?? 'Welcome to Bilori' }}</span>
+                <h1 class="about-title">{{ $about->title ?? 'About Us' }}</h1>
+                <p class="about-desc">
                     {{ $about->short_description }}
                 </p>
+                <!-- Breadcrumb moved below title and desc -->
+                <div class="modern-breadcrumb">
+                    <a href="{{ url('/') }}">Home</a>
+                    <span class="separator">/</span>
+                    <span style="color: var(--accent-gold);">About Us</span>
+                </div>
             </div>
         </section>
 
-        <!-- 2. Masonry Image Grid (Dynamic based on gallery_images) -->
+        <!-- 2. Editorial Masonry Grid (Now 4 Columns) -->
         @if(!empty($about->gallery_images))
-        <section class="masonry-grid-section">
-            <div class="container-fluid px-0">
-                <div class="masonry-grid">
-                    @foreach($about->gallery_images as $index => $img)
-                        <!-- Assigning custom classes item-1 to item-7 for the masonry look -->
-                        <div class="masonry-item item-{{ ($index % 7) + 1 }}">
-                            <img src="{{ asset($img) }}" alt="About Grid Image">
-                        </div>
-                    @endforeach
-                </div>
+        <section class="editorial-gallery fade-up-element">
+            <div class="masonry-columns">
+                @foreach($about->gallery_images as $img)
+                    <div class="masonry-item">
+                        <img src="{{ asset($img) }}" alt="Bilori Collection">
+                    </div>
+                @endforeach
             </div>
         </section>
         @endif
 
-        <!-- 3. Short Quote / Story -->
-        <section class="story-text-center">
+        <!-- 3. Minimal Quote -->
+        <section class="quote-section fade-up-element">
             <div class="container">
-                <p>
+                <p class="quote-text">
                     "But {{ env('APP_NAME', 'Bilori') }} was never just about clothes. It began with a vision: to bring back the art, and bring forward the artisans."
                 </p>
             </div>
         </section>
 
-        <!-- 4. Vision & Artisan Split Section -->
-        <section class="vision-section">
-            <div class="vision-images">
-                @if(!empty($about->vision_images))
-                    @foreach($about->vision_images as $vImg)
-                        <img src="{{ asset($vImg) }}" alt="Artisans">
-                    @endforeach
+        <!-- 4. Fixed Vision Split Section -->
+        <section class="vision-split fade-up-element">
+            <div class="vision-img-col">
+                @if(!empty($about->vision_images) && isset($about->vision_images[0]))
+                    <img src="{{ asset($about->vision_images[0]) }}" alt="Artisan Work">
+                @else
+                    <img src="https://images.unsplash.com/photo-1583391733959-b001a1db9395?auto=format&fit=crop&w=800&q=80" alt="Bilori Vision">
                 @endif
             </div>
-            <div class="vision-content">
-                <!-- We use description field here -->
+            <div class="vision-text-col">
+                <h2>{{ $about->vision_title ?? 'Our Heritage & Vision' }}</h2>
                 {!! $about->description !!}
             </div>
         </section>
 
-        <!-- 5. Three Images Row & Bottom Text -->
-        <section class="three-col-section">
+        <!-- 5. Craftsmanship Section (Infinite Loop & Glitch Fixed) -->
+        <section class="craftsmanship fade-up-element">
             <div class="container">
-                <div class="three-col-grid">
-                    <!-- If you want to allow admin to upload 3 specific images for this, you can add another column to DB, or just use the first 3 images from a new array. For now, assuming static or part of vision_images -->
-                    <div class="three-col-item"><img src="{{ asset('img/other/style1.jpg') }}" alt="Style 1"></div>
-                    <div class="three-col-item"><img src="{{ asset('img/other/style2.jpg') }}" alt="Style 2"></div>
-                    <div class="three-col-item"><img src="{{ asset('img/other/style3.jpg') }}" alt="Style 3"></div>
+                <div class="craft-header">
+                    <span class="about-subtitle-top" style="color: var(--accent-gold);">The Process</span>
+                    <h2 style="font-family: var(--font-heading); font-size: 42px; color: var(--text-dark);">Art in Every Thread</h2>
                 </div>
-                <div class="three-col-text">
-                    {{ $about->vision_description ?? "From easy-breezy co-ords to elegant kurtas, flowing gowns, and vibrant prints — we design with purpose. Styles that feel like home, fit like a dream, and speak of heritage with a modern twist." }}
+                <div class="craft-grid">
+                    <div class="craft-item">
+                        <!-- 'this.onerror=null' stops the infinite reloading loop -->
+                        <img src="{{ asset('img/product/big-product1.jpg') }}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1612423284934-2850a4eaea40?auto=format&fit=crop&w=500&q=80'" alt="Sourcing">
+                        <h4>Conscious Sourcing</h4>
+                        <p>We handpick the finest fabrics that are gentle on the skin and the environment, ensuring every piece starts with purity.</p>
+                    </div>
+                    <div class="craft-item">
+                        <img src="{{ asset('img/product/big-product2.jpg') }}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1585860363242-f8319f383e29?auto=format&fit=crop&w=500&q=80'" alt="Crafting">
+                        <h4>Handcrafted Details</h4>
+                        <p>Our skilled artisans bring decades of heritage to life, weaving magic through intricate embroidery and timeless prints.</p>
+                    </div>
+                    <div class="craft-item">
+                        <img src="{{ asset('img/product/big-product3.jpg') }}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1550614000-4b95dd24e101?auto=format&fit=crop&w=500&q=80'" alt="Final Product">
+                        <h4>Modern Elegance</h4>
+                        <p>Traditional roots meet contemporary silhouettes, creating fashion that fits perfectly into the modern woman's wardrobe.</p>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- 6. Features / Promise Section -->
-        <section class="features-section">
+        <!-- 6. Core Values / Promise Section -->
+        <section class="core-values fade-up-element">
             <div class="container">
-                <h3 class="feature-main-title">{{ $about->feature_title ?? 'BECAUSE AT BILORI, YOU’RE NOT JUST WEARING FASHION —' }}</h3>
+                <h3 class="values-title">{{ $about->feature_title ?? 'THE BILORI PROMISE' }}</h3>
                 
-                <div class="features-grid">
+                <div class="values-grid">
                     @if(!empty($about->features_list))
                         @foreach($about->features_list as $feature)
-                        <div class="feature-item">
-                            <div class="feature-icon-wrapper">
-                                <img src="{{ asset($feature['icon'] ?? 'img/icons/default.png') }}" alt="Feature">
-                            </div>
-                            <div class="feature-title">{{ $feature['title'] }}</div>
+                        <div class="value-box">
+                            <div class="value-icon"><i class="{{ $feature['icon'] ?? 'fa-solid fa-gem' }}"></i></div>
+                            <h5>{{ $feature['title'] }}</h5>
+                            <p>{{ $feature['text'] ?? 'Experience true luxury and comfort in every piece you wear.' }}</p>
                         </div>
                         @endforeach
                     @else
-                        <!-- Fallback Default -->
-                        <div class="feature-item">
-                            <div class="feature-icon-wrapper"><img src="{{ asset('img/icons/icon-spool.png') }}" alt="Icon"></div>
-                            <div class="feature-title">You're wearing stories.</div>
+                        <!-- Fallback Premium Content -->
+                        <div class="value-box">
+                            <div class="value-icon"><i class="fa-solid fa-book-open-reader"></i></div>
+                            <h5>You're wearing stories.</h5>
+                            <p>Every pattern and thread tells a tale of rich cultural heritage and timeless art.</p>
                         </div>
-                        <div class="feature-item">
-                            <div class="feature-icon-wrapper"><img src="{{ asset('img/icons/icon-hands.png') }}" alt="Icon"></div>
-                            <div class="feature-title">You're supporting artisans.</div>
+                        <div class="value-box">
+                            <div class="value-icon"><i class="fa-solid fa-hands-holding-circle"></i></div>
+                            <h5>You're supporting artisans.</h5>
+                            <p>We proudly empower local craftsmen to keep their beautiful traditions alive.</p>
                         </div>
-                        <div class="feature-item">
-                            <div class="feature-icon-wrapper"><img src="{{ asset('img/icons/icon-dress.png') }}" alt="Icon"></div>
-                            <div class="feature-title">You're keeping the art alive.</div>
+                        <div class="value-box">
+                            <div class="value-icon"><i class="fa-solid fa-star"></i></div>
+                            <h5>You're keeping the art alive.</h5>
+                            <p>By choosing Bilori, you preserve the legacy of handcrafted fashion for the future.</p>
                         </div>
                     @endif
                 </div>
-
-                <div class="tagline">LIVE IN BILORI. WEAR THE CHANGE.</div>
             </div>
         </section>
 
     </main>
 
     @include('partials.footer')
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const elements = document.querySelectorAll(".fade-up-element");
+            
+            if (!('IntersectionObserver' in window)) {
+                elements.forEach(el => el.classList.add('visible'));
+                return;
+            }
+
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("visible");
+                        obs.unobserve(entry.target); 
+                    }
+                });
+            }, {
+                root: null,
+                threshold: 0, 
+                rootMargin: "50px 0px 0px 0px" 
+            });
+
+            elements.forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
 </body>
 </html>

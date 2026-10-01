@@ -22,9 +22,8 @@ class AboutController extends Controller
     /**
      * Handle adding or updating the About details.
      */
-    public function update(Request $request)
+  public function update(Request $request)
     {
-        // Validation for main and new modern section fields
         $request->validate([
             'title'             => 'required|string|max:255',
             'subtitle'          => 'nullable|string|max:255',
@@ -36,7 +35,6 @@ class AboutController extends Controller
             'vision_description'=> 'nullable|string',
             'vision_images.*'   => 'nullable|file|max:2048',
             'feature_title'     => 'nullable|string|max:255',
-            'features_list'     => 'nullable|array',
         ]);
 
         $about = About::first() ?? new About();
@@ -52,53 +50,63 @@ class AboutController extends Controller
             mkdir($destinationPath, 0755, true);
         }
 
-        // 1. Main Featured Image Upload
+        // 1. Main Featured Image
         if ($request->hasFile('image')) {
             if (!empty($about->image) && file_exists(public_path($about->image))) {
                 @unlink(public_path($about->image));
             }
-            
-            $extension = $request->file('image')->getClientOriginalExtension();
-            if(empty($extension)) {
-                $extension = 'webp';
-            }
-            
-            $imageName = 'about/' . time() . '.' . $extension;
+            $ext = $request->file('image')->getClientOriginalExtension() ?: 'webp';
+            $imageName = 'about/' . time() . '.' . $ext;
             $request->file('image')->move($destinationPath, str_replace('about/', '', $imageName));
-            
             $data['image'] = $imageName;
         }
 
-        // 2. Masonry Gallery Images Upload (Multiple)
+        // 2. Handle Masonry Gallery Images (Keep, Remove, Add New)
+        $gallery = [];
+        if ($request->has('existing_gallery')) {
+            $removeGallery = $request->input('remove_gallery', []);
+            foreach ($request->existing_gallery as $index => $existingImg) {
+                if (!in_array($index, $removeGallery)) {
+                    $gallery[] = $existingImg; // Keep this image
+                } else {
+                    @unlink(public_path($existingImg)); // Delete from server
+                }
+            }
+        }
         if ($request->hasFile('gallery_images')) {
-            $gallery = $about->gallery_images ?? [];
             foreach ($request->file('gallery_images') as $file) {
                 $ext = $file->getClientOriginalExtension() ?: 'webp';
                 $fileName = time() . '_' . uniqid() . '.' . $ext;
                 $file->move($destinationPath, $fileName);
                 $gallery[] = 'about/' . $fileName;
             }
-            $data['gallery_images'] = $gallery;
         }
+        $data['gallery_images'] = $gallery;
 
-        // 3. Vision / Artisan Section Images Upload (Multiple)
+        // 3. Handle Vision Images (Keep, Remove, Add New)
+        $visionImgs = [];
+        if ($request->has('existing_vision')) {
+            $removeVision = $request->input('remove_vision', []);
+            foreach ($request->existing_vision as $index => $existingImg) {
+                if (!in_array($index, $removeVision)) {
+                    $visionImgs[] = $existingImg;
+                } else {
+                    @unlink(public_path($existingImg));
+                }
+            }
+        }
         if ($request->hasFile('vision_images')) {
-            $visionImgs = $about->vision_images ?? [];
             foreach ($request->file('vision_images') as $file) {
                 $ext = $file->getClientOriginalExtension() ?: 'webp';
                 $fileName = time() . '_vision_' . uniqid() . '.' . $ext;
                 $file->move($destinationPath, $fileName);
                 $visionImgs[] = 'about/' . $fileName;
             }
-            $data['vision_images'] = $visionImgs;
         }
+        $data['vision_images'] = $visionImgs;
 
-        // 4. Features List Array Handling
-        if ($request->has('features_list')) {
-            $data['features_list'] = $request->features_list;
-        }
+        $about->fill($data)->save();
 
-        $about->fill($data)->save();        
-        return redirect()->back()->with('success', 'About panel updated cleanly with all sections!');
+        return redirect()->back()->with('success', 'About page updated and images managed successfully!');
     }
 }
