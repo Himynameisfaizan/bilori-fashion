@@ -2,260 +2,266 @@
 
 @section('content')
     <div class="container py-5">
-
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h3 class="fw-bold mb-1">Edit About Details</h3>
-                <p class="text-muted mb-0">Update your website's about information, masonry images, artisan vision, and SEO configurations.</p>
+                <h3 class="fw-bold mb-1 text-dark"><i class="fa-solid fa-pen-to-square text-primary me-2"></i>Edit About Page</h3>
+                <p class="text-muted mb-0">Drag and drop images to reorder them. Sections are divided for easier management.</p>
             </div>
         </div>
 
-        <!-- Success Flash Message Support -->
         @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
-                {{ session('success') }}
+            <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-3 mb-4" role="alert">
+                <i class="fa-solid fa-check-circle me-2"></i> {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
-        <div class="row justify-content-center">
-            <div class="col-lg-9">
+        <form method="POST" action="{{ route('admin.about.update') }}" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
 
-                <div class="card shadow-sm border-0 rounded-4">
-                    <div class="card-body p-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
 
-                       <form method="POST" action="{{ route('admin.about.update') }}" enctype="multipart/form-data">
-                            @csrf
-                            @method('PUT')
-
-                            <!-- TITLE -->
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">About Title</label>
-                                <input type="text" name="title" class="form-control custom-input @error('title') is-invalid @enderror" 
-                                    value="{{ old('title', $about->title ?? '') }}" placeholder="Enter about section title">
-                                @error('title')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                    <!-- SECTION 1: HERO & INTRO -->
+                    <div class="card shadow-sm border-0 rounded-4 mb-4 section-card">
+                        <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                            <h5 class="fw-bold text-primary"><i class="fa-solid fa-heading me-2"></i>1. Hero & Introduction</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">About Title</label>
+                                    <input type="text" name="title" class="form-control custom-input @error('title') is-invalid @enderror" 
+                                        value="{{ old('title', $about->title ?? '') }}" placeholder="Enter about section title">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">Subtitle / Brand Tagline</label>
+                                    <input type="text" name="subtitle" class="form-control custom-input" 
+                                        value="{{ old('subtitle', $about->subtitle ?? '') }}" placeholder="e.g. AT BILORI...">
+                                </div>
                             </div>
-
-                            <!-- SUBTITLE -->
                             <div class="mb-3">
-                                <label class="form-label fw-semibold">Subtitle / Brand Tagline</label>
-                                <input type="text" name="subtitle" class="form-control custom-input @error('subtitle') is-invalid @enderror" 
-                                    value="{{ old('subtitle', $about->subtitle ?? '') }}" placeholder="e.g. AT HOUSE OF KARI...">
-                                @error('subtitle')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <!-- SHORT DESCRIPTION -->
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">Short Subtitle / Hook</label>
-                                <textarea name="short_description" class="form-control custom-input @error('short_description') is-invalid @enderror" rows="2"
+                                <label class="form-label fw-semibold">Short Hook / Subtitle</label>
+                                <textarea name="short_description" class="form-control custom-input" rows="2"
                                     placeholder="Brief introduction copy...">{{ old('short_description', $about->short_description ?? '') }}</textarea>
-                                @error('short_description')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
                             </div>
-
-                            <!-- DESCRIPTION -->
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">Main Narrative / Content</label>
-                                <textarea name="description" class="form-control custom-input @error('description') is-invalid @enderror" rows="6"
+                                <textarea name="description" class="form-control custom-input" rows="5"
                                     placeholder="Write your main about section backstory here...">{{ old('description', $about->description ?? '') }}</textarea>
-                                @error('description')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
                             </div>
-
-                            <!-- CURRENT MAIN IMAGE -->
-                            @if(!empty($about->image))
-                                <div class="mb-3">
-                                    <label class="form-label d-block">Current Featured Image:</label>
-                                    <img src="{{ asset($about->image) }}" class="img-thumbnail" width="150" alt="About Image">
-                                </div>
-                            @endif
-
-                            <!-- NEW MAIN IMAGE -->
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold">Update Featured Image</label>
-                                <input type="file" name="image" class="form-control custom-input @error('image') is-invalid @enderror">
-                                <small class="text-muted d-block mt-1">Recommended: high-resolution landscape orientation PNG or JPG.</small>
-                                @error('image')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <hr class="text-muted my-4 opacity-25">
-                            <h5 class="fw-bold mb-3 text-secondary">Masonry Image Grid (Gallery)</h5>
-
-                            <!-- CURRENT GALLERY IMAGES -->
-                       @if(!empty($about->gallery_images) && is_array($about->gallery_images))
-                                <div class="mb-3">
-                                    <label class="form-label d-block">Current Grid Images (Check to Delete):</label>
-                                    <div class="d-flex flex-wrap gap-3">
-                                        @foreach($about->gallery_images as $index => $gImg)
-                                            <div class="position-relative text-center border p-2 rounded">
-                                                <img src="{{ asset($gImg) }}" class="img-thumbnail d-block mb-2" width="100" height="100" style="object-fit: cover;" alt="Grid Image">
-                                                <input type="checkbox" name="remove_gallery[]" value="{{ $index }}" id="rg_{{ $index }}" class="form-check-input border-danger">
-                                                <label for="rg_{{ $index }}" class="text-danger small fw-bold">Remove</label>
-                                                <input type="hidden" name="existing_gallery[{{ $index }}]" value="{{ $gImg }}">
-                                            </div>
-                                        @endforeach
+                            <div class="p-3 bg-light rounded-3 border">
+                                <label class="form-label fw-semibold">Hero Background Image</label>
+                                @if(!empty($about->image))
+                                    <div class="mb-2">
+                                        <img src="{{ asset($about->image) }}" class="img-thumbnail rounded" width="120" alt="Hero Image">
                                     </div>
+                                @endif
+                                <input type="file" name="image" class="form-control custom-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 2: MASONRY GALLERY (DRAG & DROP) -->
+                    <div class="card shadow-sm border-0 rounded-4 mb-4 section-card">
+                        <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                            <h5 class="fw-bold text-success"><i class="fa-solid fa-images me-2"></i>2. Masonry Gallery Grid</h5>
+                            <p class="small text-muted mb-0">Drag the images by the grip icon (<i class="fa-solid fa-grip-vertical"></i>) to reorder them on the website.</p>
+                        </div>
+                        <div class="card-body p-4">
+                            @if(!empty($about->gallery_images) && is_array($about->gallery_images))
+                                <div class="d-flex flex-wrap gap-3 mb-4" id="gallery-sortable">
+                                    @foreach($about->gallery_images as $index => $gImg)
+                                        <div class="gallery-item-card p-2 border rounded bg-white shadow-sm" style="cursor: grab; width: 120px; text-align:center;">
+                                            <i class="fa-solid fa-grip-vertical text-muted mb-2 fs-5 handle"></i>
+                                            <img src="{{ asset($gImg) }}" class="img-thumbnail d-block mb-2 w-100" style="height: 100px; object-fit: cover;">
+                                            <div class="form-check d-flex justify-content-center align-items-center gap-2">
+                                                <input type="checkbox" name="remove_gallery[]" value="{{ $gImg }}" id="rg_{{ $index }}" class="form-check-input border-danger m-0">
+                                                <label for="rg_{{ $index }}" class="text-danger small fw-bold m-0" style="cursor:pointer;">Trash</label>
+                                            </div>
+                                            <!-- Hidden input maintains the order based on DOM position -->
+                                            <input type="hidden" name="existing_gallery[]" value="{{ $gImg }}">
+                                        </div>
+                                    @endforeach
                                 </div>
                             @endif
-
-                            <!-- UPLOAD GALLERY IMAGES -->
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold">Upload Masonry Gallery Images (Multiple)</label>
+                            <div class="p-3 bg-light rounded-3 border">
+                                <label class="form-label fw-semibold">Upload New Gallery Images</label>
                                 <input type="file" name="gallery_images[]" class="form-control custom-input" multiple>
-                                <small class="text-muted">Select multiple images to display in the asymmetric photo grid.</small>
                             </div>
+                        </div>
+                    </div>
 
-                            <hr class="text-muted my-4 opacity-25">
-                            <h5 class="fw-bold mb-3 text-secondary">Vision & Artisan Section</h5>
-
-                            <!-- VISION TITLE -->
+                    <!-- SECTION 3: VISION & ARTISAN -->
+                    <div class="card shadow-sm border-0 rounded-4 mb-4 section-card">
+                        <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                            <h5 class="fw-bold text-warning"><i class="fa-solid fa-eye me-2"></i>3. Heritage & Vision</h5>
+                        </div>
+                        <div class="card-body p-4">
                             <div class="mb-3">
-                                <label class="form-label fw-semibold">Vision Section Heading</label>
+                                <label class="form-label fw-semibold">Vision Heading</label>
                                 <input type="text" name="vision_title" class="form-control custom-input" 
-                                    value="{{ old('vision_title', $about->vision_title ?? '') }}" placeholder="Enter vision block title">
+                                    value="{{ old('vision_title', $about->vision_title ?? '') }}">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Vision Content</label>
+                                <textarea name="vision_description" class="form-control custom-input" rows="4">{{ old('vision_description', $about->vision_description ?? '') }}</textarea>
                             </div>
 
-                            <!-- VISION DESCRIPTION -->
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">Vision Section Content</label>
-                                <textarea name="vision_description" class="form-control custom-input" rows="4"
-                                    placeholder="Write details about artisans and commitments...">{{ old('vision_description', $about->vision_description ?? '') }}</textarea>
-                            </div>
-
-                            <!-- CURRENT VISION IMAGES -->
-                       @if(!empty($about->vision_images) && is_array($about->vision_images))
+                            @if(!empty($about->vision_images) && is_array($about->vision_images))
                                 <div class="mb-3">
-                                    <label class="form-label d-block">Current Vision Split Images (Check to Delete):</label>
-                                    <div class="d-flex flex-wrap gap-3">
+                                    <label class="form-label fw-semibold d-block">Current Vision Images (Drag to sort):</label>
+                                    <div class="d-flex flex-wrap gap-3" id="vision-sortable">
                                         @foreach($about->vision_images as $index => $vImg)
-                                            <div class="position-relative text-center border p-2 rounded">
-                                                <img src="{{ asset($vImg) }}" class="img-thumbnail d-block mb-2" width="100" height="100" style="object-fit: cover;" alt="Vision Image">
-                                                <input type="checkbox" name="remove_vision[]" value="{{ $index }}" id="rv_{{ $index }}" class="form-check-input border-danger">
-                                                <label for="rv_{{ $index }}" class="text-danger small fw-bold">Remove</label>
-                                                <input type="hidden" name="existing_vision[{{ $index }}]" value="{{ $vImg }}">
+                                            <div class="gallery-item-card p-2 border rounded bg-white shadow-sm" style="cursor: grab; width: 120px; text-align:center;">
+                                                <i class="fa-solid fa-grip-vertical text-muted mb-2 fs-5 handle"></i>
+                                                <img src="{{ asset($vImg) }}" class="img-thumbnail d-block mb-2 w-100" style="height: 100px; object-fit: cover;">
+                                                <div class="form-check d-flex justify-content-center align-items-center gap-2">
+                                                    <input type="checkbox" name="remove_vision[]" value="{{ $vImg }}" id="rv_{{ $index }}" class="form-check-input border-danger m-0">
+                                                    <label for="rv_{{ $index }}" class="text-danger small fw-bold m-0">Trash</label>
+                                                </div>
+                                                <input type="hidden" name="existing_vision[]" value="{{ $vImg }}">
                                             </div>
                                         @endforeach
                                     </div>
                                 </div>
                             @endif
-
-                            <!-- UPLOAD VISION IMAGES -->
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold">Upload Vision Split Images (Multiple)</label>
+                            <div class="p-3 bg-light rounded-3 border">
+                                <label class="form-label fw-semibold">Upload New Vision Images</label>
                                 <input type="file" name="vision_images[]" class="form-control custom-input" multiple>
-                                <small class="text-muted">Upload side-by-side artisan photos for the rustic block.</small>
                             </div>
+                        </div>
+                    </div>
 
-                            <hr class="text-muted my-4 opacity-25">
-                            <h5 class="fw-bold mb-3 text-secondary">Brand Stats / Milestones</h5>
-                            <p class="text-muted small mb-4">Add your brand's numerical achievements (e.g. 50+, 80K+). This is SEO optimized and does not use JS counters.</p>
-
+                    <!-- SECTION 4: BRAND STATS -->
+                    <div class="card shadow-sm border-0 rounded-4 mb-4 section-card">
+                        <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                            <h5 class="fw-bold text-info"><i class="fa-solid fa-chart-line me-2"></i>4. Brand Stats / Milestones</h5>
+                        </div>
+                        <div class="card-body p-4">
                             @php
                                 $stats = !empty($about->brand_stats) ? $about->brand_stats : [
-                                    ['title' => '', 'value' => ''],
-                                    ['title' => '', 'value' => ''],
-                                    ['title' => '', 'value' => ''],
-                                    ['title' => '', 'value' => '']
+                                    ['title' => '', 'value' => ''], ['title' => '', 'value' => ''],
+                                    ['title' => '', 'value' => ''], ['title' => '', 'value' => '']
                                 ];
                             @endphp
-
                             <div class="row">
                                 @for($i = 0; $i < 4; $i++)
-                                <div class="col-md-6 mb-4 p-3 border rounded">
-                                    <h6 class="fw-semibold">Stat Block {{ $i + 1 }}</h6>
-                                    <div class="mb-2">
-                                        <label class="form-label small">Number / Value (e.g. 50+)</label>
-                                        <input type="text" name="brand_stats[{{ $i }}][value]" class="form-control custom-input" 
-                                            value="{{ $stats[$i]['value'] ?? '' }}" placeholder="e.g. 100K+">
-                                    </div>
-                                    <div>
-                                        <label class="form-label small">Label / Title</label>
-                                        <input type="text" name="brand_stats[{{ $i }}][title]" class="form-control custom-input" 
-                                            value="{{ $stats[$i]['title'] ?? '' }}" placeholder="e.g. Happy Customers">
+                                <div class="col-md-6 mb-3">
+                                    <div class="p-3 bg-light border rounded">
+                                        <h6 class="fw-bold mb-3 text-secondary">Stat Box {{ $i + 1 }}</h6>
+                                        <div class="mb-2">
+                                            <label class="form-label small">Number (e.g. 50+)</label>
+                                            <input type="text" name="brand_stats[{{ $i }}][value]" class="form-control custom-input" value="{{ $stats[$i]['value'] ?? '' }}">
+                                        </div>
+                                        <div>
+                                            <label class="form-label small">Title (e.g. Happy Customers)</label>
+                                            <input type="text" name="brand_stats[{{ $i }}][title]" class="form-control custom-input" value="{{ $stats[$i]['title'] ?? '' }}">
+                                        </div>
                                     </div>
                                 </div>
                                 @endfor
-                            </div>  
-
-                            <hr class="text-muted my-4 opacity-25">
-                            <h5 class="fw-bold mb-3 text-secondary">Feature / Promise Section</h5>
-
-                            <!-- FEATURE TITLE -->
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold">Feature Heading Banner Text</label>
-                                <input type="text" name="feature_title" class="form-control custom-input" 
-                                    value="{{ old('feature_title', $about->feature_title ?? '') }}" placeholder="BECAUSE AT BILORI, YOU’RE NOT JUST WEARING FASHION —">
                             </div>
+                            <div class="mt-3">
+                                <label class="form-label fw-semibold">Feature / Promise Heading</label>
+                                <input type="text" name="feature_title" class="form-control custom-input" 
+                                    value="{{ old('feature_title', $about->feature_title ?? '') }}" placeholder="BECAUSE AT BILORI...">
+                            </div>
+                        </div>
+                    </div>
 
-                            <hr class="text-muted my-4 opacity-25">
-                            <h5 class="fw-bold mb-3 text-secondary">Search Engine Optimization (SEO)</h5>
-
-                            <!-- META TITLE -->
+                    <!-- SECTION 5: SEO -->
+                    <div class="card shadow-sm border-0 rounded-4 mb-4 section-card">
+                        <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                            <h5 class="fw-bold text-secondary"><i class="fa-solid fa-magnifying-glass me-2"></i>5. SEO Details</h5>
+                        </div>
+                        <div class="card-body p-4">
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">SEO Meta Title</label>
-                                <input type="text" name="meta_title" class="form-control custom-input"
-                                    value="{{ old('meta_title', $about->meta_title ?? '') }}" placeholder="Custom browser tab headline title">
+                                <input type="text" name="meta_title" class="form-control custom-input" value="{{ old('meta_title', $about->meta_title ?? '') }}">
                             </div>
-
-                            <!-- META DESCRIPTION -->
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">SEO Meta Description</label>
-                                <textarea name="meta_description" class="form-control custom-input" rows="3"
-                                    placeholder="Snippet summaries displayed on Google search results pages.">{{ old('meta_description', $about->meta_description ?? '') }}</textarea>
+                                <textarea name="meta_description" class="form-control custom-input" rows="2">{{ old('meta_description', $about->meta_description ?? '') }}</textarea>
                             </div>
-
-                            <!-- META KEYWORDS -->
-                            <div class="mb-4">
+                            <div class="mb-2">
                                 <label class="form-label fw-semibold">SEO Meta Keywords</label>
-                                <input type="text" name="meta_keywords" class="form-control custom-input"
-                                    value="{{ old('meta_keywords', $about->meta_keywords ?? '') }}" placeholder="company details, brand story, target market values">
+                                <input type="text" name="meta_keywords" class="form-control custom-input" value="{{ old('meta_keywords', $about->meta_keywords ?? '') }}">
                             </div>
-
-                            <!-- SAVE ACTION -->
-                            <div class="d-flex justify-content-end">
-                                <button type="submit" class="btn btn-primary px-5 py-2 fw-semibold shadow-sm rounded-3">
-                                    Save Changes
-                                </button>
-                            </div>
-
-                        </form>
-
+                        </div>
                     </div>
-                </div>
 
+                    <!-- FLOATING SAVE BUTTON -->
+                    <div class="sticky-bottom bg-white p-3 shadow-lg rounded-top-4 text-end border-top mt-4" style="bottom:0; z-index: 100;">
+                        <button type="submit" class="btn btn-primary px-5 py-3 fw-bold shadow rounded-pill fs-5">
+                            <i class="fa-solid fa-floppy-disk me-2"></i> Save All Changes
+                        </button>
+                    </div>
+
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 @endsection
 
 @push('styles')
     <style>
-        body {
-            background: #f6f8fb;
-        }
-
-        .card {
-            border-radius: 16px;
-        }
-
+        body { background: #f4f7f6; }
         .custom-input {
-            border-radius: 10px;
-            border: 1px solid #e5e9f2;
-            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            transition: all 0.3s;
         }
-
         .custom-input:focus {
+            background-color: #fff;
             border-color: #0d6efd;
-            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
         }
+        .section-card {
+            border: 1px solid rgba(0,0,0,0.05) !important;
+            transition: transform 0.2s;
+        }
+        .section-card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important;
+        }
+        .gallery-item-card {
+            transition: border-color 0.2s;
+        }
+        .gallery-item-card:hover {
+            border-color: #0d6efd !important;
+        }
+        .handle { cursor: grab; }
+        .handle:active { cursor: grabbing; }
+        .sortable-ghost { opacity: 0.4; background-color: #f8f9fa; }
     </style>
+@endpush
+
+@push('scripts')
+    <!-- SortableJS Library (For Drag & Drop) -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var galleryEl = document.getElementById('gallery-sortable');
+            if(galleryEl) {
+                new Sortable(galleryEl, {
+                    animation: 150,
+                    handle: '.handle', // Only drag by the icon
+                    ghostClass: 'sortable-ghost'
+                });
+            }
+
+            var visionEl = document.getElementById('vision-sortable');
+            if(visionEl) {
+                new Sortable(visionEl, {
+                    animation: 150,
+                    handle: '.handle',
+                    ghostClass: 'sortable-ghost'
+                });
+            }
+        });
+    </script>
 @endpush

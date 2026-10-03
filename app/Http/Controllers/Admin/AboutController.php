@@ -47,7 +47,7 @@ class AboutController extends Controller
             'brand_stats',
         ]);
 
-        $destinationPath = public_path('about');
+       $destinationPath = public_path('about');
         if (!file_exists($destinationPath)) {
             mkdir($destinationPath, 0755, true);
         }
@@ -63,13 +63,16 @@ class AboutController extends Controller
             $data['image'] = $imageName;
         }
 
-        // 2. Handle Masonry Gallery Images (Keep, Remove, Add New)
+        // 2. Handle Masonry Gallery Images (DRAG & DROP ORDERING SUPPORT)
         $gallery = [];
         if ($request->has('existing_gallery')) {
-            $removeGallery = $request->input('remove_gallery', []);
-            foreach ($request->existing_gallery as $index => $existingImg) {
-                if (!in_array($index, $removeGallery)) {
-                    $gallery[] = $existingImg; // Keep this image
+            // Checkboxes send the actual file path now, not the index
+            $removeGallery = $request->input('remove_gallery', []); 
+            
+            foreach ($request->existing_gallery as $existingImg) {
+                // Agar path remove list mein nahi hai, toh add karo (DOM/Drag wala order maintain hoga)
+                if (!in_array($existingImg, $removeGallery)) {
+                    $gallery[] = $existingImg; 
                 } else {
                     @unlink(public_path($existingImg)); // Delete from server
                 }
@@ -85,12 +88,12 @@ class AboutController extends Controller
         }
         $data['gallery_images'] = $gallery;
 
-        // 3. Handle Vision Images (Keep, Remove, Add New)
+        // 3. Handle Vision Images (DRAG & DROP SUPPORT)
         $visionImgs = [];
         if ($request->has('existing_vision')) {
             $removeVision = $request->input('remove_vision', []);
-            foreach ($request->existing_vision as $index => $existingImg) {
-                if (!in_array($index, $removeVision)) {
+            foreach ($request->existing_vision as $existingImg) {
+                if (!in_array($existingImg, $removeVision)) {
                     $visionImgs[] = $existingImg;
                 } else {
                     @unlink(public_path($existingImg));
@@ -109,6 +112,6 @@ class AboutController extends Controller
 
         $about->fill($data)->save();
 
-        return redirect()->back()->with('success', 'About page updated and images managed successfully!');
+        return redirect()->back()->with('success', 'About page updated successfully! Image order saved.');
     }
 }
