@@ -25,6 +25,7 @@ class About extends Model
         'meta_title',
         'meta_description',
         'meta_keywords',
+        'brand_stats',
     ];
 
     // OR Option B (Sabse aasan): Tum $fillable ki jagah direct guarded empty kar sakte ho taaki koi bhi field block na ho:
@@ -34,5 +35,6 @@ class About extends Model
         'gallery_images' => 'array',
         'vision_images' => 'array',
         'features_list' => 'array',
+        'brand_stats'   => 'array',
     ];
 }

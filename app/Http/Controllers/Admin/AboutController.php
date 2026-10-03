@@ -35,6 +35,7 @@ class AboutController extends Controller
             'vision_description'=> 'nullable|string',
             'vision_images.*'   => 'nullable|file|max:2048',
             'feature_title'     => 'nullable|string|max:255',
+            'brand_stats' => 'nullable|array',
         ]);
 
         $about = About::first() ?? new About();
@@ -42,7 +43,8 @@ class AboutController extends Controller
         $data = $request->only([
             'title', 'subtitle', 'short_description', 'description', 
             'vision_title', 'vision_description', 'feature_title',
-            'meta_title', 'meta_description', 'meta_keywords'
+            'meta_title', 'meta_description', 'meta_keywords',
+            'brand_stats',
         ]);
 
         $destinationPath = public_path('about');

@@ -156,6 +156,37 @@
                             </div>
 
                             <hr class="text-muted my-4 opacity-25">
+                            <h5 class="fw-bold mb-3 text-secondary">Brand Stats / Milestones</h5>
+                            <p class="text-muted small mb-4">Add your brand's numerical achievements (e.g. 50+, 80K+). This is SEO optimized and does not use JS counters.</p>
+
+                            @php
+                                $stats = !empty($about->brand_stats) ? $about->brand_stats : [
+                                    ['title' => '', 'value' => ''],
+                                    ['title' => '', 'value' => ''],
+                                    ['title' => '', 'value' => ''],
+                                    ['title' => '', 'value' => '']
+                                ];
+                            @endphp
+
+                            <div class="row">
+                                @for($i = 0; $i < 4; $i++)
+                                <div class="col-md-6 mb-4 p-3 border rounded">
+                                    <h6 class="fw-semibold">Stat Block {{ $i + 1 }}</h6>
+                                    <div class="mb-2">
+                                        <label class="form-label small">Number / Value (e.g. 50+)</label>
+                                        <input type="text" name="brand_stats[{{ $i }}][value]" class="form-control custom-input" 
+                                            value="{{ $stats[$i]['value'] ?? '' }}" placeholder="e.g. 100K+">
+                                    </div>
+                                    <div>
+                                        <label class="form-label small">Label / Title</label>
+                                        <input type="text" name="brand_stats[{{ $i }}][title]" class="form-control custom-input" 
+                                            value="{{ $stats[$i]['title'] ?? '' }}" placeholder="e.g. Happy Customers">
+                                    </div>
+                                </div>
+                                @endfor
+                            </div>  
+
+                            <hr class="text-muted my-4 opacity-25">
                             <h5 class="fw-bold mb-3 text-secondary">Feature / Promise Section</h5>
 
                             <!-- FEATURE TITLE -->

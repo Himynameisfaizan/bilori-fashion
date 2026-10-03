@@ -335,6 +335,71 @@
             .quote-text { font-size: 26px; }
             .masonry-columns { column-count: 2; } /* Keeps it 2 columns on mobile for better look */
         }
+        /* --- Ultra-Premium Brand Stats Section --- */
+        .brand-stats {
+            position: relative;
+            padding: 120px 5%;
+            /* Ek premium dark fabric texture background */
+            background-image: url('https://plus.unsplash.com/premium_photo-1664202526559-e21e9c0fb46a?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Parallax Effect */
+        }
+        .brand-stats-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.9) 0%, rgba(40, 30, 25, 0.8) 100%);
+            z-index: 1;
+        }
+        .stats-grid {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            text-align: center;
+        }
+        .stat-box {
+            padding: 40px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px); /* Glassmorphism effect */
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+        .stat-box:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-gold);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        .stat-number {
+            font-family: var(--font-heading);
+            font-size: 60px;
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+            font-weight: 500;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        .stat-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            line-height: 1.6;
+            margin: 0;
+        }
+        @media (max-width: 991px) {
+            .brand-stats { padding: 80px 5%; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+            .stat-number { font-size: 48px; }
+        }
+        @media (max-width: 767px) {
+            .stats-grid { grid-template-columns: 1fr; gap: 20px; }
+            .brand-stats { background-attachment: scroll; /* Disable parallax on mobile for smooth scroll */ }
+        }
     </style>
 </head>
 
@@ -421,6 +486,32 @@
                         <h4>Modern Elegance</h4>
                         <p>Traditional roots meet contemporary silhouettes, creating fashion that fits perfectly into the modern woman's wardrobe.</p>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Brand Stats Section (SEO Friendly, No JS Counters) -->
+        <!-- Brand Stats Section (Ultra-Premium, SEO Friendly) -->
+        <section class="brand-stats fade-up-element">
+            <div class="brand-stats-overlay"></div>
+            <div class="container">
+                <div class="stats-grid">
+                    @php
+                        // Fallback agar admin ne save nahi kiya hai
+                        $stats = !empty($about->brand_stats) ? $about->brand_stats : [
+                            ['title' => 'Years of Foundation', 'value' => '50+'],
+                            ['title' => 'Skilled Team Members', 'value' => '100+'],
+                            ['title' => 'Happy Customers', 'value' => '80K+'],
+                            ['title' => 'Monthly Orders', 'value' => '70K+']
+                        ];
+                    @endphp
+                    
+                    @foreach($stats as $stat)
+                    <div class="stat-box">
+                        <h3 class="stat-number">{{ $stat['value'] }}</h3>
+                        <p class="stat-title">{{ $stat['title'] }}</p>
+                    </div>
+                    @endforeach
                 </div>
             </div>
         </section>
