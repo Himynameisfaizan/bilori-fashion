@@ -21,7 +21,7 @@ use App\Http\Controllers\Admin\NewArrivalController;
 use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\PolicyController;
 use App\Http\Controllers\Admin\ShippingController;
-
+use Illuminate\Support\Facades\Route;
 
 // Guest routes for admin
 Route::prefix('admin')->group(function () {

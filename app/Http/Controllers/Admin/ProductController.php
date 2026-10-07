@@ -445,23 +445,23 @@ class ProductController extends Controller
 
         $product->update($data);
 
-// ==================== UPDATE VARIATIONS ====================
-if ($request->has('variations')) {
-    $existingColorIds = $product->colors()->pluck('id')->toArray();
-    $updatedColorIds = [];
+     // ==================== UPDATE VARIATIONS ====================
+        if ($request->has('variations')) {
+            $existingColorIds = $product->colors()->pluck('id')->toArray();
+            $updatedColorIds = [];
 
-    foreach ($request->variations as $colorIndex => $variation) {
-        if (empty($variation['color_name'])) { continue; }
+        foreach ($request->variations as $colorIndex => $variation) {
+            if (empty($variation['color_name'])) { continue; }
 
-        $colorId = $variation['id'] ?? null;
-        $colorData = [
-            'product_id' => $product->id,
-            'name' => $variation['color_name'],
-            'code' => $variation['color_code'] ?? '#000000',
-            'extra_price' => 0,
-            'sku' => $variation['color_sku'] ?? null,
-            'is_active' => true,
-        ];
+            $colorId = $variation['id'] ?? null;
+            $colorData = [
+                'product_id' => $product->id,
+                'name' => $variation['color_name'],
+                'code' => $variation['color_code'] ?? '#000000',
+                'extra_price' => 0,
+                'sku' => $variation['color_sku'] ?? null,
+                'is_active' => true,
+            ];
 
         $hasImageUpdate = false;
         $colorImages = [];
@@ -529,28 +529,28 @@ if ($request->has('variations')) {
                 ]);
             }
         }
-    }
+     }
 
-    // Delete colors that are no longer in the request
-    $colorsToDelete = array_diff($existingColorIds, $updatedColorIds);
-    foreach ($colorsToDelete as $colorId) {
-        $color = ProductColor::find($colorId);
-        if ($color) {
-            if ($color->images) {
-                $images = json_decode($color->images, true);
-                if (is_array($images)) {
-                    foreach ($images as $img) {
-                        if (file_exists(public_path($img))) { @unlink(public_path($img)); }
+        // Delete colors that are no longer in the request
+        $colorsToDelete = array_diff($existingColorIds, $updatedColorIds);
+        foreach ($colorsToDelete as $colorId) {
+            $color = ProductColor::find($colorId);
+            if ($color) {
+                if ($color->images) {
+                    $images = json_decode($color->images, true);
+                    if (is_array($images)) {
+                        foreach ($images as $img) {
+                            if (file_exists(public_path($img))) { @unlink(public_path($img)); }
+                        }
                     }
                 }
+                if ($color->image && file_exists(public_path($color->image))) { @unlink(public_path($color->image)); }
+                $color->sizes()->delete();
+                $color->delete();
             }
-            if ($color->image && file_exists(public_path($color->image))) { @unlink(public_path($color->image)); }
-            $color->sizes()->delete();
-            $color->delete();
         }
-    }
 
-
+        }
         return redirect()->route('admin.products.index')->with('success', 'Product updated successfully!');
     }
 
